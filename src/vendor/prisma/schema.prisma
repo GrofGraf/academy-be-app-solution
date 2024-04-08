@@ -1,0 +1,48 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgres"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id             String          @id @default(uuid())
+    firstName      String          @map("first_name")
+    lastName       String          @map("last_name")
+    username       String          @unique
+    password       String
+    createdAt      DateTime        @default(now()) @map("created_at")
+    updatedAt      DateTime        @updatedAt @map("updated_at")
+    goldPriceNotes GoldPriceNote[]
+
+    @@index([username], type: Hash)
+    @@map("user")
+}
+
+model GoldPrice {
+    id                  String          @id @default(uuid())
+    price               Float           @db.DoublePrecision
+    publishedAtOnSource DateTime        @map("published_at_on_source")
+    createdAt           DateTime        @default(now()) @map("created_at")
+    updatedAt           DateTime        @updatedAt @map("updated_at")
+    goldPriceNotes      GoldPriceNote[]
+
+    @@index([createdAt], type: Hash)
+    @@index([publishedAtOnSource], type: Hash)
+    @@map("gold_price")
+}
+
+model GoldPriceNote {
+    id          String    @id @default(uuid())
+    goldPrice   GoldPrice @relation(fields: [goldPriceId], references: [id], onDelete: Cascade)
+    goldPriceId String    @map("gold_price_id")
+    user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId      String    @map("user_id")
+    text        String
+    createdAt   DateTime  @default(now()) @map("created_at")
+    updatedAt   DateTime  @updatedAt @map("updated_at")
+
+    @@map("gold_price_note")
+}
