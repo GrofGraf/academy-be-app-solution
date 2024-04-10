@@ -19,13 +19,13 @@ export class CreateGoldPriceNoteUseCase {
 
   async execute(
     gp: GoldPriceEntity,
-    data: Omit<CreateGoldPriceNote, 'goldPriceId' | 'userId'>,
+    data: Omit<CreateGoldPriceNote, 'goldPriceId'>,
   ) {
     return this.goldPriceNoteRepository.create(
       GoldPriceNoteEntity.new({
         ...data,
         goldPriceId: gp.id,
-        userId: '4c8388cc-e9b9-420d-ae27-a46be06d426b',
+        userId: data.userId,
       }),
     );
   }

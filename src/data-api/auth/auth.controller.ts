@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   ForbiddenException,
+  NotFoundException,
   Post,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -20,6 +21,7 @@ import {
   UserNotFoundAuthError,
   WrongPasswordAuthError,
 } from '~modules/auth/auth.errors';
+import { UserAlreadyRegisteredUserError } from '~modules/user/user.errors';
 
 @ApiTags('auth')
 @Controller(`${API_V1_PATH}/auth`)
@@ -34,34 +36,44 @@ export class AuthController {
   async signup(@Body() data: SignupBodyDto) {
     const result = await this.createUserUseCase.execute(data);
 
-    if (result.err) {
-      throw new BadRequestException(result.val, { cause: result.val });
-    }
+    return result
+      .mapErr((error) => {
+        match(error)
+          .with(P.instanceOf(UserAlreadyRegisteredUserError), (error) => {
+            throw new BadRequestException(error.message, {
+              cause: error,
+            });
+          })
+          .exhaustive();
+      })
+      .map((user) => {
+        const accessToken = this.createAccessTokenUseCase.execute(user);
 
-    const accessToken = this.createAccessTokenUseCase.execute(result.unwrap());
-
-    return new SignupResDto(accessToken);
+        return new SignupResDto(accessToken);
+      });
   }
 
   @Post('/login')
   async login(@Body() data: LoginBodyDto) {
     const result = await this.loginUseCase.execute(data);
 
-    if (result.err) {
-      match(result.val)
-        .with(P.instanceOf(UserNotFoundAuthError), () => {
-          throw new BadRequestException('User not found', {
-            cause: result.val,
-          });
-        })
-        .with(P.instanceOf(WrongPasswordAuthError), () => {
-          throw new ForbiddenException('Wrong password', {
-            cause: result.val,
-          });
-        })
-        .exhaustive();
-    }
-
-    return new SignupResDto(result.unwrap());
+    return result
+      .mapErr((error) => {
+        match(error)
+          .with(P.instanceOf(WrongPasswordAuthError), (error) => {
+            throw new ForbiddenException(error, {
+              cause: error,
+            });
+          })
+          .with(P.instanceOf(UserNotFoundAuthError), (error) => {
+            throw new NotFoundException(error, {
+              cause: error,
+            });
+          })
+          .exhaustive();
+      })
+      .map((accessToken) => {
+        return new SignupResDto(accessToken);
+      }).val;
   }
 }

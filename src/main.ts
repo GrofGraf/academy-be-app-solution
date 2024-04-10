@@ -6,7 +6,7 @@ import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { ValidationError } from '~common/error/validation.error';
 import { flatten } from '~utils/validation';
 import { AllExceptionsFilter } from '~common/http/exception-response.helper';
-import { Logger, PinoLogger } from 'nestjs-pino';
+import { Logger, LoggerErrorInterceptor, PinoLogger } from 'nestjs-pino';
 import { requestHandlerMiddleware } from '~common/http/request-handler.helper';
 
 async function bootstrap() {
@@ -22,6 +22,8 @@ async function bootstrap() {
 
   const logger = app.get(Logger);
   app.useLogger(logger);
+  // This enables error cause stack in the logs
+  app.useGlobalInterceptors(new LoggerErrorInterceptor());
 
   app.use(requestHandlerMiddleware());
 

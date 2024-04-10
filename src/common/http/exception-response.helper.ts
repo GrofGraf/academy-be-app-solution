@@ -17,6 +17,7 @@ import {
   INPUT_VALIDATION_ERROR,
   ValidationError,
 } from '~common/error/validation.error';
+import { PinoLogger } from 'nestjs-pino';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -72,7 +73,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
           },
         });
       })
-      .otherwise(() => {
+      .otherwise((e: Error) => {
+        PinoLogger.root.error(e);
         return new ErrorResponseDto({
           code: 'UNCAUGHT-EXCEPTION',
           message: 'Uncaught Exception',

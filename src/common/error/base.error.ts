@@ -1,5 +1,4 @@
 export interface BaseErrorArgs {
-  code: string;
   message?: string;
   meta?: Record<string, any>;
   cause?: Error;
@@ -8,8 +7,8 @@ export interface BaseErrorArgs {
 /**
  * Base class for all internal errors
  */
-export class BaseError extends Error {
-  readonly code: string;
+export abstract class BaseError extends Error {
+  abstract code: string;
   readonly meta?: Record<string, any>;
 
   constructor(data: BaseErrorArgs) {
@@ -17,7 +16,6 @@ export class BaseError extends Error {
       cause: data.cause,
     });
 
-    this.code = data.code;
     this.meta = data?.meta;
   }
 }

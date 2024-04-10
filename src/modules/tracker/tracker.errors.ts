@@ -1,29 +1,35 @@
 import { BaseError } from '~common/error/base.error';
 
-export class TrackerRateLimitError extends BaseError {
+export class RateLimitTrackerError extends BaseError {
+  RateLimitTrackerError = true;
+  code = RateLimitTrackerError.name;
+
   constructor(cause?: Error) {
     super({
-      code: TrackerRateLimitError.name,
       message: 'Rate limit exceeded',
       cause,
     });
   }
 }
 
-export class TrackerGatewayTimeOutError extends BaseError {
+export class GatewayTimeOutTrackerError extends BaseError {
+  TrackerGatewayTimeOutError = true;
+  code = GatewayTimeOutTrackerError.name;
+
   constructor(cause?: Error) {
     super({
-      code: TrackerGatewayTimeOutError.name,
       message: 'Gateway timeout',
       cause,
     });
   }
 }
 
-export class TrackerUnknownError extends BaseError {
+export class UnknownTrackerError extends BaseError {
+  UnknownTrackerError = true;
+  code = UnknownTrackerError.name;
+
   constructor(cause?: Error) {
     super({
-      code: TrackerUnknownError.name,
       message: 'Unknown error occurred',
       cause,
     });

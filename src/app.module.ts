@@ -10,9 +10,11 @@ import { GoldPriceModule } from '~modules/gold-price/gold-price.module';
 import { LoggerModule } from '~common/logging/logger.module';
 import { UserModule } from '~modules/user/user.module';
 import { AuthModule } from '~modules/auth/auth.module';
+import { ClsModule } from '~common/cls/cls.module';
 
 @Module({
   imports: [
+    ClsModule,
     ConfigModule,
     DbModule,
     TrackerModule,

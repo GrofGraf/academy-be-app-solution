@@ -10,9 +10,9 @@ import {
 } from '~modules/gold-price/gold-price.repository';
 import { DateTime, Interval } from 'luxon';
 import {
-  TrackerGatewayTimeOutError,
-  TrackerRateLimitError,
-  TrackerUnknownError,
+  GatewayTimeOutTrackerError,
+  RateLimitTrackerError,
+  UnknownTrackerError,
 } from '../tracker.errors';
 import { match } from 'ts-pattern';
 
@@ -77,13 +77,13 @@ export class GoldPriceTrackerCron {
       if (error instanceof AxiosError) {
         err = match(error.status)
           .with(504, () => {
-            return new TrackerGatewayTimeOutError(error);
+            return new GatewayTimeOutTrackerError(error as AxiosError);
           })
           .with(429, () => {
-            return new TrackerRateLimitError(error);
+            return new RateLimitTrackerError(error as AxiosError);
           })
           .otherwise(() => {
-            return new TrackerUnknownError(error);
+            return new UnknownTrackerError(error as AxiosError);
           });
       }
 
