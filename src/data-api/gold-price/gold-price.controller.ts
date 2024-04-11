@@ -20,7 +20,7 @@ import { GoldPriceResDto } from './dto/gold-price.res.dto';
 import { CreateGoldPriceNoteUseCase } from '~modules/gold-price/submodules/gold-price-note/use-cases/create-gold-price-note.use-case';
 import { GoldPriceNoteResDto } from '~data-api/gold-price-note/dto/gold-price-note.res.dto';
 import { CreateGoldPriceNoteBodyDto } from '~data-api/gold-price-note/dto/create-gold-price-note.body.dto';
-import { JwtGuard } from '~modules/auth/guards/jwt.guard';
+import { JwtGuard } from '~data-api/auth/guards/jwt.guard';
 import { AuthAsyncCtx } from '~modules/auth/auth-async-ctx';
 
 @ApiTags('gold-prices')

@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  CanActivate,
-  ExecutionContext,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 
 import { ClientRequest } from '~common/http/interfaces/client-request.interface';
@@ -24,48 +19,24 @@ type JwtPayload = {
 };
 
 @Injectable()
-export class JwtGuard implements CanActivate {
+export class HandleJwtTokenUseCase {
   constructor(
     private authCtx: AuthAsyncCtx,
     private authConfig: AuthConfig,
   ) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    const req = context.switchToHttp().getRequest();
+  verifyToken(
+    req: ClientRequest,
+  ): Result<JwtPayload, VerifyingJwtTokenAuthError> {
+    const token = this.parseToken(req);
 
-    const token = this.parseToken(req)
-      .mapErr((error) => {
-        throw new UnauthorizedException(error, {
-          cause: error,
-        });
-      })
-      .map((token) => token).val;
-
-    const decoded = this.verifyToken(token).mapErr((error) => {
-      throw new UnauthorizedException(error, {
-        cause: error,
-      });
-    }).val;
-
-    const currentUser = await this.authCtx.initFromJwtToken(decoded.id);
-
-    if (currentUser.err) {
-      currentUser.mapErr((error) => {
-        throw new UnauthorizedException(error, {
-          cause: error,
-        });
-      });
+    if (token.err) {
+      return Err(new VerifyingJwtTokenAuthError(token.val));
     }
 
-    return true;
-  }
-
-  private verifyToken(
-    token: string,
-  ): Result<JwtPayload, VerifyingJwtTokenAuthError> {
     try {
       const decoded = jwt.verify(
-        token,
+        token.unwrap(),
         this.authConfig.jwtTokenSecret,
       ) as JwtPayload;
 

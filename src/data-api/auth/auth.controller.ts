@@ -40,7 +40,7 @@ export class AuthController {
       .mapErr((error) => {
         match(error)
           .with(P.instanceOf(UserAlreadyRegisteredUserError), (error) => {
-            throw new BadRequestException(error.message, {
+            throw new BadRequestException(error, {
               cause: error,
             });
           })
