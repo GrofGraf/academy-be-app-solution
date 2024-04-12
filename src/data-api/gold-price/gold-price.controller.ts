@@ -9,7 +9,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { API_V1_PATH } from '~common/http/http.constant';
 import {
@@ -23,6 +23,7 @@ import { CreateGoldPriceNoteBodyDto } from '~data-api/gold-price-note/dto/create
 import { JwtGuard } from '~data-api/auth/guards/jwt.guard';
 import { AuthAsyncCtx } from '~modules/auth/auth-async-ctx';
 
+@ApiBearerAuth()
 @ApiTags('gold-prices')
 @UseGuards(JwtGuard)
 @Controller(`${API_V1_PATH}/gold-prices`)

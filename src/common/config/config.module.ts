@@ -4,8 +4,6 @@ import { Config } from './config';
 if (!process.env.NODE_ENV) {
   process.env.NODE_ENV = 'local';
 }
-console.log(`Using configuration for "${process.env.NODE_ENV}" environment.`);
-
 export const ConfigModule = TypedConfigModule.forRoot({
   schema: Config,
   load: fileLoader({

@@ -8,6 +8,7 @@ import { flatten } from '~utils/validation';
 import { AllExceptionsFilter } from '~common/http/exception-response.helper';
 import { Logger, LoggerErrorInterceptor, PinoLogger } from 'nestjs-pino';
 import { requestHandlerMiddleware } from '~common/http/request-handler.helper';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -39,8 +40,6 @@ async function bootstrap() {
       whitelist: true, // strip non-whitelisted
       exceptionFactory: (fieldErrors) => {
         const err = new ValidationError(flatten(fieldErrors));
-        console.log('ValidationPipe:', err instanceof ValidationError);
-
         return err;
       },
     }),
@@ -48,7 +47,22 @@ async function bootstrap() {
 
   app.useGlobalFilters(new AllExceptionsFilter());
 
+  const config = new DocumentBuilder()
+    .setTitle('Gold Price Tracker API')
+    .setDescription('API docs for Gold Price Tracker API')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  });
+
   await app.listen(rootConfig.app.port);
+
+  logger.log(`Using configuration for "${process.env.NODE_ENV}" environment.`);
   logger.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap().catch((e) => {

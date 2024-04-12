@@ -3,10 +3,11 @@ import {
   Body,
   Controller,
   ForbiddenException,
+  HttpCode,
   NotFoundException,
   Post,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { API_V1_PATH } from '~common/http/http.constant';
 
@@ -22,6 +23,7 @@ import {
   WrongPasswordAuthError,
 } from '~modules/auth/auth.errors';
 import { UserAlreadyRegisteredUserError } from '~modules/user/user.errors';
+import { LoginResDto } from './dto/login.res.dto';
 
 @ApiTags('auth')
 @Controller(`${API_V1_PATH}/auth`)
@@ -32,6 +34,8 @@ export class AuthController {
     private loginUseCase: LoginUseCase,
   ) {}
 
+  @HttpCode(200)
+  @ApiOkResponse({ type: SignupResDto })
   @Post('/signup')
   async signup(@Body() data: SignupBodyDto) {
     const result = await this.createUserUseCase.execute(data);
@@ -50,9 +54,11 @@ export class AuthController {
         const accessToken = this.createAccessTokenUseCase.execute(user);
 
         return new SignupResDto(accessToken);
-      });
+      }).val;
   }
 
+  @HttpCode(200)
+  @ApiOkResponse({ type: LoginResDto })
   @Post('/login')
   async login(@Body() data: LoginBodyDto) {
     const result = await this.loginUseCase.execute(data);
@@ -73,7 +79,7 @@ export class AuthController {
           .exhaustive();
       })
       .map((accessToken) => {
-        return new SignupResDto(accessToken);
+        return new LoginResDto(accessToken);
       }).val;
   }
 }

@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from '~common/config/config.module';
 import { TrackerModule } from '~modules/tracker/tracker.module';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -26,6 +25,5 @@ import { ClsModule } from '~common/cls/cls.module';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

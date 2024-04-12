@@ -75,7 +75,7 @@ export class GoldPriceTrackerCron {
       let err = error;
 
       if (error instanceof AxiosError) {
-        err = match(error.status)
+        err = match(error.response?.status)
           .with(504, () => {
             return new GatewayTimeOutTrackerError(error as AxiosError);
           })
