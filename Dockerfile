@@ -43,7 +43,7 @@ COPY --from=dist /app/node_modules/.prisma/client  ./node_modules/.prisma/client
 
 COPY package*.json ./
 
-COPY .env.prod.yaml ./
+COPY .env.dev.yaml ./
 
 COPY entrypoint.sh ./
 
