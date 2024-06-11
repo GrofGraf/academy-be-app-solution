@@ -8,6 +8,7 @@ import {
 import type { NextFunction, Response } from 'express';
 import type { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import * as crypto from 'crypto';
 
 import { ClientRequest } from './interfaces/client-request.interface';
 

@@ -1,0 +1,16 @@
+# dist
+FROM node:20.10.0-alpine as dist
+
+ENV NODE_ENV docker
+
+WORKDIR /app
+
+COPY ./ ./
+
+RUN npm install
+
+RUN npx prisma generate
+
+RUN npx ts-node -r tsconfig-paths/register ./src/vendor/prisma/utils/generate-env.util.ts
+
+CMD npm run start
